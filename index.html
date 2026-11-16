@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#08090c" />
+  <meta name="description" content="私密、实时的乐器调音器。" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pitchline" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>Pitchline — 调音器</title>
+  <style>
+    :root { color-scheme: dark; --bg:#08090c; --surface:#171a20; --line:rgba(255,255,255,.085); --text:#f6f7fb; --muted:#8c929f; --accent:#d7ff6b; --cool:#a6c8ff; --warm:#f7b66c; --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px); }
+    * { box-sizing:border-box; }
+    html,body { min-height:100%; }
+    body { margin:0; min-width:320px; min-height:100dvh; overflow-x:hidden; background:radial-gradient(circle at 50% -10%,rgba(185,255,102,.11),transparent 31rem),radial-gradient(circle at 5% 79%,rgba(100,144,255,.07),transparent 26rem),var(--bg); color:var(--text); font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",Arial,sans-serif; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent; }
+    button,input { font:inherit; }
+    .app { width:min(100%,560px); min-height:100dvh; margin:auto; padding:calc(18px + var(--safe-top)) 20px calc(24px + var(--safe-bottom)); display:flex; flex-direction:column; }
+    .topbar { min-height:42px; display:flex; align-items:center; justify-content:space-between; }
+    .brand { display:flex; align-items:center; gap:10px; color:#e9ebf0; font-size:15px; font-weight:650; letter-spacing:-.03em; }
+    .mark { width:29px; height:29px; display:grid; place-items:center; border:1px solid rgba(215,255,107,.28); border-radius:9px; background:linear-gradient(145deg,rgba(215,255,107,.20),rgba(215,255,107,.03)); color:var(--accent); box-shadow:inset 0 1px 0 rgba(255,255,255,.1); }
+    .mark svg { width:18px; height:18px; }
+    .privacy { display:inline-flex; align-items:center; gap:7px; padding:7px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); background:rgba(255,255,255,.025); font-size:11px; font-weight:600; }
+    .dot { width:6px; height:6px; border-radius:50%; background:#6f7682; transition:.18s; }
+    .privacy.active .dot { background:var(--accent); box-shadow:0 0 0 4px rgba(215,255,107,.1); }
+    .main { flex:1; display:flex; flex-direction:column; justify-content:center; padding:clamp(42px,8vh,88px) 0 34px; }
+    .state { margin:0 0 14px; color:var(--muted); text-align:center; font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
+    .state:before { content:""; display:inline-block; width:6px; height:6px; margin:0 7px 1px 0; border-radius:50%; background:currentColor; opacity:.8; }
+    .note-wrap { height:143px; display:flex; justify-content:center; align-items:flex-start; }
+    .note { color:#f8f9fc; font-size:clamp(126px,34vw,180px); font-weight:720; letter-spacing:-.115em; line-height:.78; text-indent:-.105em; text-shadow:0 6px 44px rgba(240,247,255,.07); transition:.16s; }
+    .note.empty { color:#404651; text-shadow:none; }
+    .octave { margin:13px 0 0 12px; color:var(--muted); font-size:21px; font-weight:620; letter-spacing:-.05em; }
+    .frequency { min-height:22px; margin-top:4px; color:var(--muted); text-align:center; font-size:14px; font-variant-numeric:tabular-nums; }
+    .frequency strong { color:#d5d9e0; font-weight:650; }
+    .meter { position:relative; isolation:isolate; overflow:hidden; margin-top:31px; padding:29px 18px 18px; border:1px solid var(--line); border-radius:22px; background:linear-gradient(140deg,rgba(255,255,255,.055),rgba(255,255,255,.017)); box-shadow:0 18px 48px rgba(0,0,0,.19),inset 0 1px 0 rgba(255,255,255,.04); }
+    .meter:after { content:""; position:absolute; z-index:-1; inset:auto -35% -80% 35%; height:150px; border-radius:50%; background:rgba(215,255,107,.07); filter:blur(24px); opacity:0; transition:.18s; }
+    .meter.in-tune:after { opacity:1; }
+    .scale { position:relative; height:28px; display:flex; justify-content:space-between; align-items:center; }
+    .scale:before { content:""; position:absolute; left:2px; right:2px; top:50%; height:1px; background:rgba(255,255,255,.12); }
+    .tick { position:relative; width:1px; height:6px; border-radius:1px; background:#59606d; }
+    .tick.major { height:12px; background:#858d9b; }.tick.center { height:19px; width:2px; background:var(--accent); box-shadow:0 0 10px rgba(215,255,107,.5); }
+    .needle { position:absolute; z-index:1; left:50%; top:-4px; width:3px; height:34px; border-radius:99px; background:#edf1f7; box-shadow:0 0 0 4px rgba(235,240,247,.08),0 3px 12px rgba(0,0,0,.4); transform:translateX(-50%); transition:transform 90ms linear,background-color .16s,box-shadow .16s; }
+    .meter.in-tune .needle { background:var(--accent); box-shadow:0 0 0 4px rgba(215,255,107,.11),0 0 18px rgba(215,255,107,.38); }
+    .numbers { display:flex; justify-content:space-between; margin-top:6px; color:#69707d; font-size:10px; font-weight:650; font-variant-numeric:tabular-nums; }
+    .reading { display:flex; justify-content:center; align-items:baseline; gap:8px; min-height:39px; margin-top:13px; }
+    .cents { color:#dde1e8; font-size:25px; font-weight:680; font-variant-numeric:tabular-nums; letter-spacing:-.055em; }
+    .reading-status { color:var(--muted); font-size:11px; font-weight:750; letter-spacing:.11em; text-transform:uppercase; }
+    .meter.in-tune .cents,.meter.in-tune .reading-status { color:var(--accent); }.meter.sharp .cents,.meter.sharp .reading-status { color:var(--warm); }.meter.flat .cents,.meter.flat .reading-status { color:var(--cool); }
+    .controls { display:grid; gap:12px; }.listen { width:100%; min-height:57px; border:0; border-radius:18px; background:var(--accent); color:#172000; font-size:16px; font-weight:760; letter-spacing:-.025em; box-shadow:0 10px 30px rgba(167,210,64,.14),inset 0 1px 0 rgba(255,255,255,.42); cursor:pointer; transition:.15s; }.listen:active { transform:scale(.985); }.listen.listening { background:#e4e7ec; color:#1d2026; box-shadow:0 10px 26px rgba(255,255,255,.09); }
+    .reference { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 16px; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.025); }.reference-copy { min-width:0; }.reference-label { color:#dfe3ea; font-size:13px; font-weight:650; }.reference-help { margin-top:3px; color:var(--muted); font-size:11px; }.ref-controls { display:flex; align-items:center; gap:9px; flex-shrink:0; }
+    .adjust,.reset { border:1px solid var(--line); cursor:pointer; color:#e6e9ef; background:#20242c; transition:.15s; }.adjust { width:33px; height:33px; border-radius:10px; font-size:21px; font-weight:400; line-height:1; }.adjust:active,.reset:active { transform:scale(.94); }.adjust:hover,.reset:hover { border-color:rgba(255,255,255,.18); background:#272c35; }.value { width:56px; color:#f4f5f8; text-align:center; font-size:16px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.035em; }.value small { margin-left:2px; color:var(--muted); font-size:10px; font-weight:600; letter-spacing:0; }
+    .reference-extra { display:flex; align-items:center; justify-content:space-between; margin-top:11px; padding:0 2px; }.range-wrap { flex:1; margin-right:17px; }input[type=range] { appearance:none; width:100%; height:3px; border-radius:99px; outline:none; background:linear-gradient(90deg,var(--accent) var(--range-progress,50%),#303540 var(--range-progress,50%)); }input[type=range]::-webkit-slider-thumb { appearance:none; width:15px; height:15px; border:3px solid var(--bg); border-radius:50%; background:var(--accent); box-shadow:0 0 0 1px rgba(215,255,107,.25); }.reset { padding:6px 8px; border-radius:8px; color:var(--muted); font-size:10px; font-weight:700; letter-spacing:.04em; }
+    .notice { min-height:18px; margin:13px 3px 0; color:var(--muted); text-align:center; font-size:11px; line-height:1.35; }.notice.error { color:#ff8c8c; }.listen:focus-visible,.adjust:focus-visible,.reset:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+    @media (min-width:520px){.app{padding-left:30px;padding-right:30px}.main{padding-top:74px}}@media (max-height:700px){.main{padding-top:30px;padding-bottom:20px}.meter{margin-top:22px}.note-wrap{height:127px}}@media (prefers-reduced-motion:reduce){*,*:before,*:after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand" aria-label="Pitchline 调音器"><span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h2.2l1.4-4.4 2.45 9 2.15-7 1.55 3.4H19" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>pitchline</span></div>
+      <div id="privacy" class="privacy" aria-live="polite"><span class="dot"></span><span id="privacyText">本地模式</span></div>
+    </header>
+    <section class="main" aria-label="实时调音器">
+      <p id="state" class="state">准备就绪</p>
+      <div class="note-wrap" aria-live="polite"><div id="note" class="note empty">—</div><span id="octave" class="octave"></span></div>
+      <div id="frequency" class="frequency">点击下方按钮开始调音</div>
+      <div id="meter" class="meter" aria-label="音高偏差"><div id="scale" class="scale"><div id="needle" class="needle" aria-hidden="true"></div></div><div class="numbers" aria-hidden="true"><span>-50</span><span>-25</span><span>0</span><span>+25</span><span>+50</span></div><div class="reading"><span id="cents" class="cents">—</span><span id="readingStatus" class="reading-status">等待声音</span></div></div>
+    </section>
+    <section class="controls" aria-label="调音器设置">
+      <button id="listen" class="listen" type="button">开始调音</button>
+      <div><div class="reference"><div class="reference-copy"><div class="reference-label">基准音高</div><div class="reference-help">A4 的参考频率</div></div><div class="ref-controls"><button class="adjust" type="button" data-direction="-1" aria-label="基准音高减 1 赫兹">−</button><div id="a4Value" class="value">440<small>Hz</small></div><button class="adjust" type="button" data-direction="1" aria-label="基准音高加 1 赫兹">+</button></div></div><div class="reference-extra"><div class="range-wrap"><input id="a4Range" type="range" min="415" max="466" step="1" value="440" aria-label="A4 基准音高" /></div><button id="reset" class="reset" type="button">重设 440</button></div></div>
+      <p id="notice" class="notice">音频仅在此设备上实时分析</p>
+    </section>
+  </main>
+  <script>
+  (() => {
+    "use strict";
+    const NOTES = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+    const ui = {
+      listen: document.getElementById("listen"), state: document.getElementById("state"), note: document.getElementById("note"), octave: document.getElementById("octave"), frequency: document.getElementById("frequency"), meter: document.getElementById("meter"), scale: document.getElementById("scale"), needle: document.getElementById("needle"), cents: document.getElementById("cents"), readingStatus: document.getElementById("readingStatus"), privacy: document.getElementById("privacy"), privacyText: document.getElementById("privacyText"), a4Value: document.getElementById("a4Value"), a4Range: document.getElementById("a4Range"), reset: document.getElementById("reset"), notice: document.getElementById("notice")
+    };
+    let a4 = Number(localStorage.getItem("pitchline-a4")) || 440;
+    let context, analyser, stream, data, raf, listening = false, smoothed, lastPitchAt = 0, lastAnalysisAt = 0;
+
+    function setNotice(message, error = false) { ui.notice.textContent = message; ui.notice.classList.toggle("error", error); }
+    function updateA4(value) {
+      a4 = Math.max(415, Math.min(466, Number(value)));
+      localStorage.setItem("pitchline-a4", String(a4));
+      ui.a4Range.value = a4;
+      ui.a4Range.style.setProperty("--range-progress", `${((a4 - 415) / 51) * 100}%`);
+      ui.a4Value.innerHTML = `${a4}<small>Hz</small>`;
+    }
+    function clearReading(label = "等待声音") {
+      ui.note.textContent = "—"; ui.note.classList.add("empty"); ui.octave.textContent = "";
+      ui.frequency.textContent = listening ? "正在聆听乐器声音" : "点击下方按钮开始调音";
+      ui.cents.textContent = "—"; ui.readingStatus.textContent = label;
+      ui.meter.classList.remove("in-tune", "sharp", "flat");
+      ui.needle.style.transform = "translateX(-50%)";
+    }
+    function noteFor(frequency) {
+      const midi = Math.round(69 + 12 * Math.log2(frequency / a4));
+      const target = a4 * 2 ** ((midi - 69) / 12);
+      return { note: NOTES[(midi + 120) % 12], octave: Math.floor(midi / 12) - 1, target, cents: 1200 * Math.log2(frequency / target) };
+    }
+    function render(frequency) {
+      const pitch = noteFor(frequency), cents = Math.round(pitch.cents), inTune = Math.abs(cents) <= 5, sharp = cents > 5;
+      const bounded = Math.max(-50, Math.min(50, pitch.cents));
+      const offset = (bounded / 100) * (ui.scale.clientWidth - 4);
+      ui.note.textContent = pitch.note; ui.note.classList.remove("empty"); ui.octave.textContent = pitch.octave;
+      ui.frequency.innerHTML = `<strong>${frequency.toFixed(1)} Hz</strong> · 目标 ${pitch.target.toFixed(1)} Hz`;
+      ui.cents.textContent = `${cents > 0 ? "+" : ""}${cents}¢`;
+      ui.needle.style.transform = `translateX(calc(-50% + ${offset}px))`;
+      ui.meter.classList.toggle("in-tune", inTune); ui.meter.classList.toggle("sharp", sharp); ui.meter.classList.toggle("flat", !inTune && !sharp);
+      if (inTune) { ui.state.textContent = "音准稳定"; ui.readingStatus.textContent = "音准正确"; }
+      else if (sharp) { ui.state.textContent = "偏高"; ui.readingStatus.textContent = "稍微调低"; }
+      else { ui.state.textContent = "偏低"; ui.readingStatus.textContent = "稍微调高"; }
+    }
+    // 简化的 YIN 基频检测，适合单音乐器；返回 null 表示无可信音高。
+    function detectPitch(buffer, sampleRate) {
+      const size = buffer.length, half = size >> 1;
+      let mean = 0, energy = 0;
+      for (let i = 0; i < size; i++) mean += buffer[i];
+      mean /= size;
+      for (let i = 0; i < size; i++) { const sample = buffer[i] - mean; energy += sample * sample; }
+      if (Math.sqrt(energy / size) < 0.01) return null;
+      const minTau = Math.max(2, Math.floor(sampleRate / 1500));
+      const maxTau = Math.min(half - 2, Math.ceil(sampleRate / 55));
+      const yin = new Float32Array(maxTau + 1);
+      for (let tau = 1; tau <= maxTau; tau++) {
+        let sum = 0;
+        for (let i = 0; i < half; i++) { const diff = buffer[i] - buffer[i + tau]; sum += diff * diff; }
+        yin[tau] = sum;
+      }
+      let running = 0;
+      for (let tau = 1; tau <= maxTau; tau++) { running += yin[tau]; yin[tau] = yin[tau] * tau / (running || 1); }
+      let estimate = -1;
+      for (let tau = minTau; tau <= maxTau; tau++) {
+        if (yin[tau] < 0.14) { while (tau < maxTau && yin[tau + 1] < yin[tau]) tau++; estimate = tau; break; }
+      }
+      if (estimate < 0) {
+        let best = Infinity;
+        for (let tau = minTau; tau <= maxTau; tau++) if (yin[tau] < best) { best = yin[tau]; estimate = tau; }
+        if (best > 0.28) return null;
+      }
+      const before = yin[estimate - 1] ?? yin[estimate], current = yin[estimate], after = yin[estimate + 1] ?? current;
+      const denominator = 2 * (2 * current - before - after);
+      const shift = denominator ? Math.max(-1, Math.min(1, (after - before) / denominator)) : 0;
+      return sampleRate / (estimate + shift);
+    }
+    function frame() {
+      if (!listening || !analyser || !context) return;
+      const now = performance.now();
+      // 音准显示不需要每一帧都做高成本的相关计算；约 20 次/秒更省电且足够平滑。
+      if (now - lastAnalysisAt < 50) { raf = requestAnimationFrame(frame); return; }
+      lastAnalysisAt = now;
+      analyser.getFloatTimeDomainData(data);
+      const detected = detectPitch(data, context.sampleRate);
+      if (detected && Number.isFinite(detected)) {
+        const related = !smoothed || Math.abs(1200 * Math.log2(detected / smoothed)) < 280;
+        smoothed = related && smoothed ? smoothed * .72 + detected * .28 : detected;
+        lastPitchAt = now; render(smoothed);
+      } else if (now - lastPitchAt > 380) {
+        smoothed = null; ui.state.textContent = "正在聆听"; clearReading();
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    async function start() {
+      if (!navigator.mediaDevices?.getUserMedia) { setNotice("此浏览器不支持麦克风访问。请使用新版 Safari。", true); return; }
+      try {
+        setNotice("正在请求麦克风权限…");
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+        context = new (window.AudioContext || window.webkitAudioContext)();
+        await context.resume();
+        analyser = context.createAnalyser(); analyser.fftSize = 4096; analyser.smoothingTimeConstant = 0;
+        context.createMediaStreamSource(stream).connect(analyser); data = new Float32Array(analyser.fftSize);
+        listening = true; lastPitchAt = lastAnalysisAt = performance.now();
+        ui.listen.textContent = "停止调音"; ui.listen.classList.add("listening"); ui.privacy.classList.add("active"); ui.privacyText.textContent = "正在本地聆听"; ui.state.textContent = "正在聆听";
+        setNotice("音频仅在此设备上实时分析"); clearReading(); frame();
+      } catch (error) {
+        stop(); const denied = error && (error.name === "NotAllowedError" || error.name === "SecurityError");
+        setNotice(denied ? "未获得麦克风权限。请在 Safari 的网站设置中允许麦克风。" : "无法启动麦克风，请确认没有其他应用正在占用。", true);
+      }
+    }
+    function stop() {
+      listening = false; if (raf) cancelAnimationFrame(raf); raf = null;
+      if (stream) stream.getTracks().forEach(track => track.stop()); stream = null;
+      if (context) context.close().catch(() => {}); context = analyser = data = undefined; smoothed = null;
+      ui.listen.textContent = "开始调音"; ui.listen.classList.remove("listening"); ui.privacy.classList.remove("active"); ui.privacyText.textContent = "本地模式"; ui.state.textContent = "已暂停"; clearReading("已暂停"); setNotice("音频仅在此设备上实时分析");
+    }
+    for (let i = 0; i <= 24; i++) { const tick = document.createElement("span"); tick.className = `tick${i % 6 === 0 ? " major" : ""}${i === 12 ? " center" : ""}`; ui.scale.insertBefore(tick, ui.needle); }
+    ui.listen.addEventListener("click", () => listening ? stop() : start());
+    document.querySelectorAll("[data-direction]").forEach(button => button.addEventListener("click", () => updateA4(a4 + Number(button.dataset.direction))));
+    ui.a4Range.addEventListener("input", event => updateA4(event.target.value)); ui.reset.addEventListener("click", () => updateA4(440));
+    document.addEventListener("visibilitychange", () => { if (document.hidden && listening) stop(); });
+    updateA4(a4); clearReading();
+    if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+  })();
+  </script>
+</body>
+</html>

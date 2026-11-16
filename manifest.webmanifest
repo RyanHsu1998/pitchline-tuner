@@ -1,0 +1,11 @@
+{
+  "name": "Pitchline 调音器",
+  "short_name": "Pitchline",
+  "description": "一个私密、离线可用的实时乐器调音器。",
+  "lang": "zh-CN",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#08090c",
+  "theme_color": "#08090c",
+  "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
