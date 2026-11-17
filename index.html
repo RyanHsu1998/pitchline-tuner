@@ -630,6 +630,102 @@
       50% { transform: translateX(-50%) translateY(7px) scale(1.12); }
     }
     @media (prefers-reduced-motion: reduce) { .listen.listening::after { animation: none; } }
+
+    /* Mode navigation and metronome: same deep glass language, with a tactile tempo core. */
+    .mode-switch {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      width: min(100%, 224px);
+      height: 46px;
+      margin: 0 auto;
+      padding: 4px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(255,230,249,.13), rgba(177,134,255,.045));
+      box-shadow: 0 12px 28px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,238,252,.12);
+    }
+    .mode-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-width: 0;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      color: rgba(238,226,245,.55);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 720;
+      letter-spacing: .03em;
+      cursor: pointer;
+      transition: color .25s ease, background .25s ease, box-shadow .25s ease, transform .16s ease;
+    }
+    .mode-tab svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .mode-tab.active {
+      color: #fff6ff;
+      border-color: rgba(255,231,249,.16);
+      background: linear-gradient(145deg, rgba(255,222,246,.22), rgba(192,154,255,.10));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.20), 0 4px 13px rgba(83,43,119,.16);
+    }
+    .mode-tab:active { transform: scale(.96); }
+    .mode-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+    .mode-view { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .mode-view[hidden] { display: none !important; }
+
+    .metronome-view { gap: 13px; padding: 27px 0 calc(18px + var(--safe-bottom)); }
+    .metro-head { text-align: center; }
+    .metro-kicker { color: rgba(218,201,230,.62); font-size: 10px; font-weight: 780; letter-spacing: .24em; }
+    .metro-bpm { margin-top: 4px; color: #fff7ff; font-size: clamp(58px, 16vw, 86px); font-weight: 680; line-height: .92; font-variant-numeric: tabular-nums; letter-spacing: -.075em; text-shadow: 0 10px 40px rgba(212,157,255,.16); }
+    .metro-unit { margin-top: 8px; color: rgba(210,194,223,.60); font-size: 11px; font-weight: 750; letter-spacing: .18em; }
+    .metro-stage { position: relative; display: flex; flex: 1; min-height: 255px; align-items: center; justify-content: center; flex-direction: column; }
+    .metro-halo { position: absolute; width: min(72vw, 330px); height: min(72vw, 330px); border-radius: 50%; background: radial-gradient(circle, rgba(213,143,255,.13), rgba(104,164,255,.055) 41%, transparent 72%); filter: blur(20px); opacity: .65; transform: scale(.86); transition: opacity .6s ease, transform .7s cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+    .metronome-view.is-playing .metro-halo { opacity: .95; transform: scale(1.08); animation: metroHaloBreath 2.8s ease-in-out infinite; }
+    @keyframes metroHaloBreath { 0%,100% { filter: blur(20px); } 50% { filter: blur(31px); } }
+    .metro-tap { position: relative; isolation: isolate; display: grid; place-items: center; width: min(58vw, 236px); height: min(58vw, 236px); border: 1px solid rgba(255,239,255,.28); border-radius: 50%; color: #fff6ff; background: radial-gradient(circle at 32% 18%, rgba(255,255,255,.24), transparent 34%), radial-gradient(circle at 70% 76%, rgba(111,95,203,.24), transparent 48%), linear-gradient(145deg, rgba(255,217,245,.16), rgba(148,120,227,.12) 52%, rgba(53,83,176,.09)); box-shadow: 0 28px 65px rgba(6,2,25,.36), inset 0 1px 0 rgba(255,255,255,.42), inset 0 -24px 48px rgba(89,51,143,.14), 0 0 0 9px rgba(245,180,226,.05); -webkit-backdrop-filter: blur(30px) saturate(1.55); backdrop-filter: blur(30px) saturate(1.55); cursor: pointer; transition: transform .18s ease, box-shadow .32s ease, border-color .32s ease, background .32s ease; }
+    .metro-tap::before { position: absolute; z-index: -1; inset: 7px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; content: ""; opacity: .85; }
+    .metro-tap::after { position: absolute; z-index: -1; inset: 16% 22% auto; height: 22%; border-radius: 50%; background: rgba(255,255,255,.24); filter: blur(17px); content: ""; opacity: .52; }
+    .metro-tap-shine { position: absolute; inset: -12%; border-radius: 50%; background: conic-gradient(from 205deg, transparent 0 22%, rgba(142,218,255,.20) 34%, rgba(255,159,225,.20) 50%, rgba(255,195,128,.14) 65%, transparent 78%); filter: blur(18px); opacity: .55; animation: metroShimmer 8s ease-in-out infinite; pointer-events: none; }
+    @keyframes metroShimmer { 0%,100% { transform: rotate(-12deg) scale(.94); } 50% { transform: rotate(16deg) scale(1.04); } }
+    .metro-tap-label { position: relative; z-index: 1; font-size: 26px; font-weight: 650; letter-spacing: .12em; text-indent: .12em; }
+    .metro-tap-sub { position: relative; z-index: 1; margin-top: -57px; color: rgba(231,216,239,.62); font-size: 11px; font-weight: 650; letter-spacing: .12em; }
+    .metro-tap:active { transform: scale(.95); }
+    .metro-tap.beat-strong { border-color: rgba(255,214,239,.72); background: radial-gradient(circle at 34% 20%, rgba(255,255,255,.42), transparent 34%), radial-gradient(circle at 70% 78%, rgba(255,122,204,.38), transparent 52%), linear-gradient(145deg, rgba(255,207,238,.40), rgba(180,123,244,.25) 54%, rgba(72,99,202,.20)); box-shadow: 0 30px 70px rgba(83,23,106,.44), inset 0 1px 0 rgba(255,255,255,.66), inset 0 -28px 54px rgba(122,47,142,.20), 0 0 0 12px rgba(255,181,225,.10), 0 0 56px rgba(255,129,213,.30); }
+    .metro-tap.beat-soft { border-color: rgba(161,211,255,.46); box-shadow: 0 27px 64px rgba(17,14,63,.38), inset 0 1px 0 rgba(255,255,255,.50), inset 0 -24px 48px rgba(63,75,148,.17), 0 0 0 10px rgba(149,192,255,.065), 0 0 36px rgba(122,174,255,.20); }
+    .metro-beat-track { display: grid; grid-template-columns: repeat(16, minmax(4px, 1fr)); gap: 5px; width: min(78vw, 322px); margin-top: 24px; }
+    .metro-beat-dot { height: 5px; border-radius: 99px; background: rgba(255,232,250,.18); box-shadow: inset 0 1px 0 rgba(255,255,255,.10); transition: background .2s ease, box-shadow .2s ease, transform .2s ease; }
+    .metro-beat-dot.bar { background: rgba(220,181,255,.30); }
+    .metro-beat-dot.active { background: var(--accent); box-shadow: 0 0 14px rgba(245,180,226,.74); transform: scaleY(1.65); }
+    .metro-beat-dot.active.accent { background: #fff0ad; box-shadow: 0 0 16px rgba(255,209,141,.85); }
+    .metro-play-row { display: flex; align-items: center; justify-content: center; gap: 13px; min-height: 44px; }
+    .metro-play { display: grid; place-items: center; width: 44px; height: 40px; border: 1px solid rgba(255,230,249,.18); border-radius: 15px; color: #f7edfb; background: linear-gradient(145deg, rgba(255,222,246,.16), rgba(175,140,248,.07)); cursor: pointer; transition: transform .16s ease, background .25s ease, border-color .25s ease; }
+    .metro-play:hover { border-color: rgba(255,220,245,.38); background: rgba(255,214,242,.16); }
+    .metro-play:active { transform: scale(.92); }
+    .metro-play svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .metro-play .pause-icon, .metro-play.is-playing .play-icon { display: none; }
+    .metro-play.is-playing .pause-icon { display: block; }
+    .metro-state { min-width: 110px; color: rgba(222,206,232,.67); font-size: 11px; font-weight: 650; letter-spacing: .02em; }
+    .metro-controls { display: grid; gap: 16px; padding: 16px 15px 15px; border-radius: 25px; }
+    .metro-control-row { display: grid; align-items: center; gap: 10px; min-height: 28px; }
+    .tempo-row { grid-template-columns: 42px 31px minmax(0,1fr) 31px; }
+    .signature-row { grid-template-columns: 42px 1fr; }
+    .swing-row { grid-template-columns: 42px minmax(0,1fr) 42px; }
+    .metro-label { color: rgba(225,208,235,.68); font-size: 11px; font-weight: 750; letter-spacing: .04em; }
+    .metro-step { display: grid; place-items: center; width: 31px; height: 29px; border: 1px solid rgba(255,224,247,.14); border-radius: 10px; color: #f4e8f8; background: rgba(255,214,242,.07); font-size: 19px; font-weight: 350; line-height: 1; cursor: pointer; transition: transform .15s ease, background .2s ease, border-color .2s ease; }
+    .metro-step:hover { border-color: rgba(255,213,241,.38); background: rgba(255,214,242,.14); }
+    .metro-step:active { transform: scale(.91); }
+    .metro-range { width: 100%; height: 4px; appearance: none; border-radius: 99px; outline: none; background: linear-gradient(90deg, var(--accent) var(--metro-progress,50%), rgba(255,225,246,.13) var(--metro-progress,50%)); }
+    .metro-range::-webkit-slider-thumb { width: 17px; height: 17px; appearance: none; border: 3px solid var(--bg); border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 1px rgba(245,180,226,.42), 0 2px 9px rgba(0,0,0,.35); }
+    .metro-range::-moz-range-thumb { width: 11px; height: 11px; border: 3px solid var(--bg); border-radius: 50%; background: var(--accent); }
+    .signature-picker { display: flex; align-items: center; justify-content: flex-end; gap: 9px; }
+    .signature-picker span { color: rgba(229,211,237,.60); font-size: 14px; font-weight: 700; }
+    .signature-picker select { min-width: 62px; height: 31px; padding: 0 10px; border: 1px solid rgba(255,224,247,.16); border-radius: 11px; color: #f7eef9; background: rgba(255,214,242,.08); font-size: 13px; font-weight: 700; text-align: center; color-scheme: dark; outline: none; }
+    .signature-picker select:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(245,180,226,.12); }
+    .metro-output { color: #f7eefa; font-size: 12px; font-weight: 720; font-variant-numeric: tabular-nums; text-align: right; }
+    @media (max-height: 720px) { .metronome-view { gap: 8px; padding-top: 18px; } .metro-stage { min-height: 220px; } .metro-tap { width: min(50vw, 204px); height: min(50vw, 204px); } .metro-beat-track { margin-top: 15px; } .metro-controls { gap: 11px; } }
+    @media (max-width: 360px) { .metro-tap { width: 190px; height: 190px; } .metro-tap-label { font-size: 23px; } .metro-controls { padding-left: 12px; padding-right: 12px; } }
+    @media (prefers-reduced-motion: reduce) { .metro-tap-shine, .metronome-view.is-playing .metro-halo { animation: none; } }
   </style>
 </head>
 <body>
@@ -640,43 +736,94 @@
   </div>
   <div class="edge-wash" aria-hidden="true"></div>
   <main class="app">
-    <div class="top-space" aria-hidden="true"></div>
+    <nav class="mode-switch glass" aria-label="模式切换">
+      <button id="modeTuner" class="mode-tab active" type="button" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v8.8a4 4 0 1 0 8 0V4M8 8h8M12 4v16"/></svg><span>调音</span>
+      </button>
+      <button id="modeMetro" class="mode-tab" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 20 2.1-15.5h3.8L16 20M6.4 20h11.2M12 6.5l4.7 6.3M12 6.5l-4.7 6.3"/></svg><span>节拍</span>
+      </button>
+    </nav>
 
-    <section class="main" aria-label="实时调音器">
-      <div class="hero">
-        <div class="halo" aria-hidden="true"></div>
-        <div class="note-wrap" aria-live="polite"><div id="note" class="note empty">·</div><span id="octave" class="octave"></span></div>
-        <div id="frequency" class="frequency">— <small>Hz</small></div>
-      </div>
-      <div id="meter" class="meter" aria-label="音高偏差">
-        <div id="scale" class="scale"><div id="needle" class="needle" aria-hidden="true"></div></div>
-        <div class="reading"><span id="cents" class="cents">—</span><span id="readingStatus" class="reading-status" aria-label="等待声音">•</span></div>
-      </div>
-      <div id="state" class="sr-only" aria-live="polite">准备就绪</div>
+    <section id="tunerView" class="mode-view" aria-label="实时调音器">
+      <div class="top-space" aria-hidden="true"></div>
+      <section class="main" aria-label="实时调音器">
+        <div class="hero">
+          <div class="halo" aria-hidden="true"></div>
+          <div class="note-wrap" aria-live="polite"><div id="note" class="note empty">·</div><span id="octave" class="octave"></span></div>
+          <div id="frequency" class="frequency">— <small>Hz</small></div>
+        </div>
+        <div id="meter" class="meter" aria-label="音高偏差">
+          <div id="scale" class="scale"><div id="needle" class="needle" aria-hidden="true"></div></div>
+          <div class="reading"><span id="cents" class="cents">—</span><span id="readingStatus" class="reading-status" aria-label="等待声音">•</span></div>
+        </div>
+        <div id="state" class="sr-only" aria-live="polite">准备就绪</div>
+      </section>
+
+      <section class="controls" aria-label="调音器设置">
+        <div class="listen-dock glass">
+          <div class="signal signal-left" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <button id="listen" class="listen" type="button" aria-label="开始调音" aria-pressed="false">
+            <svg class="icon mic-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"></rect><path d="M6.5 11.6a5.5 5.5 0 0 0 11 0M12 17.2v3M9.2 20.2h5.6"></path></svg>
+            <svg class="icon stop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 7.8v8.4M15.8 7.8v8.4"></path></svg>
+          </button>
+          <div class="signal signal-right" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <span id="privacy" class="ambient-dot" role="status" aria-label="未开始聆听"></span>
+        </div>
+
+        <div>
+          <div class="reference glass">
+            <div class="a4-meta"><span class="a4-tag">A4</span><div id="a4Value" class="value">440<small>Hz</small></div></div>
+            <div class="ref-controls">
+              <button class="adjust" type="button" data-direction="-1" aria-label="基准音高减 1 赫兹">−</button>
+              <button class="adjust" type="button" data-direction="1" aria-label="基准音高加 1 赫兹">＋</button>
+            </div>
+          </div>
+          <div class="reference-extra"><div class="range-wrap"><input id="a4Range" type="range" min="415" max="466" step="1" value="440" aria-label="A4 基准音高" /></div><button id="reset" class="reset" type="button" aria-label="重设为 440 赫兹">440</button></div>
+        </div>
+        <p id="notice" class="notice" aria-live="polite"></p>
+      </section>
     </section>
 
-    <section class="controls" aria-label="调音器设置">
-      <div class="listen-dock glass">
-        <div class="signal signal-left" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-        <button id="listen" class="listen" type="button" aria-label="开始调音" aria-pressed="false">
-          <svg class="icon mic-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"></rect><path d="M6.5 11.6a5.5 5.5 0 0 0 11 0M12 17.2v3M9.2 20.2h5.6"></path></svg>
-          <svg class="icon stop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 7.8v8.4M15.8 7.8v8.4"></path></svg>
+    <section id="metronomeView" class="mode-view metronome-view" aria-label="节拍器" hidden>
+      <div class="metro-head">
+        <div class="metro-kicker">TEMPO</div>
+        <div class="metro-bpm" id="metroBpm" aria-live="polite">120</div>
+        <div class="metro-unit">BPM</div>
+      </div>
+      <div class="metro-stage">
+        <div class="metro-halo" aria-hidden="true"></div>
+        <button id="metroTap" class="metro-tap" type="button" aria-label="点击测量速度">
+          <span class="metro-tap-shine" aria-hidden="true"></span>
+          <span class="metro-tap-label">TAP</span>
+          <span class="metro-tap-sub">节奏</span>
         </button>
-        <div class="signal signal-right" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-        <span id="privacy" class="ambient-dot" role="status" aria-label="未开始聆听"></span>
+        <div id="metroBeatTrack" class="metro-beat-track" aria-label="节拍指示"></div>
       </div>
-
-      <div>
-        <div class="reference glass">
-          <div class="a4-meta"><span class="a4-tag">A4</span><div id="a4Value" class="value">440<small>Hz</small></div></div>
-          <div class="ref-controls">
-            <button class="adjust" type="button" data-direction="-1" aria-label="基准音高减 1 赫兹">−</button>
-            <button class="adjust" type="button" data-direction="1" aria-label="基准音高加 1 赫兹">＋</button>
-          </div>
+      <div class="metro-play-row">
+        <button id="metroPlay" class="metro-play glass" type="button" aria-label="播放节拍器" aria-pressed="false">
+          <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6.5 8 5.5-8 5.5V6.5Z"/></svg>
+          <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7.5v9M15 7.5v9"/></svg>
+        </button>
+        <span id="metroState" class="metro-state">点击大按钮测速度</span>
+      </div>
+      <div class="metro-controls glass">
+        <div class="metro-control-row tempo-row">
+          <span class="metro-label">速度</span>
+          <button id="metroMinus" class="metro-step" type="button" aria-label="速度减 1">−</button>
+          <input id="metroTempo" class="metro-range" type="range" min="30" max="240" step="1" value="120" aria-label="每分钟拍数" />
+          <button id="metroPlus" class="metro-step" type="button" aria-label="速度加 1">＋</button>
         </div>
-        <div class="reference-extra"><div class="range-wrap"><input id="a4Range" type="range" min="415" max="466" step="1" value="440" aria-label="A4 基准音高" /></div><button id="reset" class="reset" type="button" aria-label="重设为 440 赫兹">440</button></div>
+        <div class="metro-control-row signature-row">
+          <span class="metro-label">拍号</span>
+          <div class="signature-picker"><select id="metroNumerator" aria-label="拍号分子"></select><span>/</span><select id="metroDenominator" aria-label="拍号分母"><option>2</option><option selected>4</option><option>8</option><option>16</option><option>32</option></select></div>
+        </div>
+        <div class="metro-control-row swing-row">
+          <span class="metro-label">Swing</span>
+          <input id="metroSwing" class="metro-range" type="range" min="1" max="100" step="1" value="50" aria-label="摇摆幅度" />
+          <output id="metroSwingValue" class="metro-output">50%</output>
+        </div>
       </div>
-      <p id="notice" class="notice" aria-live="polite"></p>
     </section>
   </main>
 
@@ -822,7 +969,171 @@
     ui.listen.addEventListener("click", () => listening ? stop() : start());
     document.querySelectorAll("[data-direction]").forEach(button => button.addEventListener("click", () => updateA4(a4 + Number(button.dataset.direction))));
     ui.a4Range.addEventListener("input", event => updateA4(event.target.value)); ui.reset.addEventListener("click", () => updateA4(440));
-    document.addEventListener("visibilitychange", () => { if (document.hidden && listening) stop(); });
+
+    const metro = {
+      view: document.getElementById("metronomeView"), tunerView: document.getElementById("tunerView"), modeTuner: document.getElementById("modeTuner"), modeMetro: document.getElementById("modeMetro"), bpm: document.getElementById("metroBpm"), tempo: document.getElementById("metroTempo"), minus: document.getElementById("metroMinus"), plus: document.getElementById("metroPlus"), numerator: document.getElementById("metroNumerator"), denominator: document.getElementById("metroDenominator"), swing: document.getElementById("metroSwing"), swingValue: document.getElementById("metroSwingValue"), tap: document.getElementById("metroTap"), play: document.getElementById("metroPlay"), state: document.getElementById("metroState"), beatTrack: document.getElementById("metroBeatTrack")
+    };
+    let metroBpm = Number(localStorage.getItem("pitchline-tempo")) || 120;
+    let metroNumerator = Number(localStorage.getItem("pitchline-meter-top")) || 4;
+    let metroDenominator = Number(localStorage.getItem("pitchline-meter-bottom")) || 4;
+    let metroSwing = Number(localStorage.getItem("pitchline-swing")) || 50;
+    let metroAudio, metroTimer, metroRunning = false, metroNextTime = 0, metroBeat = 0, metroSub = 0, metroTapTimes = [], metroLastTap = 0;
+
+    function setRangeProgress(input, min, max, value, variable = "--metro-progress") {
+      input.style.setProperty(variable, `${((value - min) / (max - min)) * 100}%`);
+    }
+    function setMetroBpm(value) {
+      metroBpm = Math.max(30, Math.min(240, Math.round(Number(value) || 120)));
+      metro.bpm.textContent = metroBpm;
+      metro.tempo.value = metroBpm;
+      setRangeProgress(metro.tempo, 30, 240, metroBpm);
+      localStorage.setItem("pitchline-tempo", String(metroBpm));
+    }
+    function setMetroSwing(value) {
+      metroSwing = Math.max(1, Math.min(100, Math.round(Number(value) || 50)));
+      metro.swing.value = metroSwing;
+      metro.swingValue.textContent = `${metroSwing}%`;
+      setRangeProgress(metro.swing, 1, 100, metroSwing);
+      localStorage.setItem("pitchline-swing", String(metroSwing));
+    }
+    function renderBeatTrack() {
+      metro.beatTrack.innerHTML = "";
+      metro.beatTrack.style.gridTemplateColumns = `repeat(${Math.min(metroNumerator, 16)}, minmax(4px, 1fr))`;
+      for (let index = 0; index < metroNumerator; index++) {
+        const dot = document.createElement("span");
+        dot.className = `metro-beat-dot${index % 4 === 0 ? " bar" : ""}`;
+        dot.dataset.beat = String(index);
+        metro.beatTrack.appendChild(dot);
+      }
+    }
+    function setMetroSignature(top, bottom) {
+      metroNumerator = Math.max(1, Math.min(32, Number(top) || 4));
+      metroDenominator = [2, 4, 8, 16, 32].includes(Number(bottom)) ? Number(bottom) : 4;
+      metro.numerator.value = String(metroNumerator);
+      metro.denominator.value = String(metroDenominator);
+      localStorage.setItem("pitchline-meter-top", String(metroNumerator));
+      localStorage.setItem("pitchline-meter-bottom", String(metroDenominator));
+      renderBeatTrack();
+      if (metroBeat >= metroNumerator) metroBeat = 0;
+    }
+    function ensureMetroAudio() {
+      if (!metroAudio) metroAudio = new (window.AudioContext || window.webkitAudioContext)();
+      if (metroAudio.state === "suspended") return metroAudio.resume();
+      return Promise.resolve();
+    }
+    function scheduleClick(when, accent = false, offbeat = false) {
+      if (!metroAudio) return;
+      const oscillator = metroAudio.createOscillator();
+      const gain = metroAudio.createGain();
+      oscillator.type = accent ? "triangle" : "sine";
+      oscillator.frequency.setValueAtTime(accent ? 1320 : (offbeat ? 760 : 980), when);
+      oscillator.frequency.exponentialRampToValueAtTime(accent ? 780 : 480, when + (accent ? .075 : .055));
+      gain.gain.setValueAtTime(0.0001, when);
+      gain.gain.exponentialRampToValueAtTime(accent ? .24 : (offbeat ? .085 : .15), when + .004);
+      gain.gain.exponentialRampToValueAtTime(0.0001, when + (accent ? .095 : .075));
+      oscillator.connect(gain).connect(metroAudio.destination);
+      oscillator.start(when); oscillator.stop(when + .11);
+    }
+    function flashMetro(beat, accent, delay) {
+      window.setTimeout(() => {
+        if (!metroRunning) return;
+        const active = metro.beatTrack.querySelector(".active");
+        if (active) active.classList.remove("active", "accent");
+        const dot = metro.beatTrack.querySelector(`[data-beat="${beat}"]`);
+        if (dot) dot.classList.add("active", ...(accent ? ["accent"] : []));
+        metro.tap.classList.remove("beat-strong", "beat-soft");
+        void metro.tap.offsetWidth;
+        metro.tap.classList.add(accent ? "beat-strong" : "beat-soft");
+        window.setTimeout(() => metro.tap.classList.remove("beat-strong", "beat-soft"), 170);
+      }, Math.max(0, delay));
+    }
+    function scheduleMetro() {
+      if (!metroRunning || !metroAudio) return;
+      const horizon = metroAudio.currentTime + .12;
+      while (metroNextTime < horizon) {
+        const beat = metroBeat, sub = metroSub, accent = beat === 0 && sub === 0;
+        scheduleClick(metroNextTime, accent, sub === 1);
+        flashMetro(beat, accent, Math.max(0, (metroNextTime - metroAudio.currentTime) * 1000));
+        const swingOffset = ((metroSwing - 50) / 50) * .22;
+        const step = (60 / metroBpm) * (sub === 0 ? .5 + swingOffset : .5 - swingOffset);
+        metroNextTime += Math.max(.025, step);
+        metroSub = sub === 0 ? 1 : 0;
+        if (sub === 1) metroBeat = (metroBeat + 1) % metroNumerator;
+      }
+    }
+    async function startMetro() {
+      await ensureMetroAudio();
+      metroRunning = true;
+      metro.view.classList.add("is-playing");
+      metro.play.classList.add("is-playing");
+      metro.play.setAttribute("aria-label", "停止节拍器");
+      metro.play.setAttribute("aria-pressed", "true");
+      metro.state.textContent = `${metroBpm} BPM · 播放中`;
+      metroBeat = 0; metroSub = 0; metroNextTime = metroAudio.currentTime + .06;
+      scheduleMetro();
+      metroTimer = window.setInterval(scheduleMetro, 25);
+    }
+    function stopMetro() {
+      metroRunning = false;
+      if (metroTimer) window.clearInterval(metroTimer);
+      metroTimer = undefined;
+      metro.view.classList.remove("is-playing");
+      metro.play.classList.remove("is-playing");
+      metro.play.setAttribute("aria-label", "播放节拍器");
+      metro.play.setAttribute("aria-pressed", "false");
+      metro.state.textContent = "点击大按钮测速度";
+      metro.tap.classList.remove("beat-strong", "beat-soft");
+      const active = metro.beatTrack.querySelector(".active");
+      if (active) active.classList.remove("active", "accent");
+    }
+    function manualTapPulse() {
+      metro.tap.classList.remove("beat-soft");
+      void metro.tap.offsetWidth;
+      metro.tap.classList.add("beat-soft");
+      window.setTimeout(() => metro.tap.classList.remove("beat-soft"), 180);
+    }
+    async function registerMetroTap() {
+      await ensureMetroAudio();
+      scheduleClick(metroAudio.currentTime + .01, true, false);
+      const now = performance.now();
+      if (metroLastTap && now - metroLastTap > 1500) metroTapTimes = [];
+      metroTapTimes.push(now);
+      metroTapTimes = metroTapTimes.slice(-8);
+      metroLastTap = now;
+      manualTapPulse();
+      if (metroTapTimes.length >= 2) {
+        const intervals = metroTapTimes.slice(1).map((time, index) => time - metroTapTimes[index]);
+        const average = intervals.reduce((sum, value) => sum + value, 0) / intervals.length;
+        setMetroBpm(Math.round(60000 / average));
+        metro.state.textContent = `${metroBpm} BPM · 继续点击微调`;
+      } else metro.state.textContent = "继续点击测量速度";
+    }
+    function setMode(mode) {
+      const tunerActive = mode === "tuner";
+      if (tunerActive && metroRunning) stopMetro();
+      if (!tunerActive && listening) stop();
+      metro.tunerView.hidden = !tunerActive;
+      metro.view.hidden = tunerActive;
+      metro.modeTuner.classList.toggle("active", tunerActive);
+      metro.modeMetro.classList.toggle("active", !tunerActive);
+      metro.modeTuner.setAttribute("aria-pressed", String(tunerActive));
+      metro.modeMetro.setAttribute("aria-pressed", String(!tunerActive));
+    }
+    for (let value = 1; value <= 32; value++) {
+      const option = document.createElement("option"); option.value = String(value); option.textContent = String(value); metro.numerator.appendChild(option);
+    }
+    setMetroBpm(metroBpm); setMetroSwing(metroSwing); setMetroSignature(metroNumerator, metroDenominator);
+    metro.modeTuner.addEventListener("click", () => setMode("tuner"));
+    metro.modeMetro.addEventListener("click", () => setMode("metro"));
+    metro.tap.addEventListener("click", registerMetroTap);
+    metro.play.addEventListener("click", () => metroRunning ? stopMetro() : startMetro());
+    metro.minus.addEventListener("click", () => setMetroBpm(metroBpm - 1));
+    metro.plus.addEventListener("click", () => setMetroBpm(metroBpm + 1));
+    metro.tempo.addEventListener("input", event => setMetroBpm(event.target.value));
+    metro.swing.addEventListener("input", event => setMetroSwing(event.target.value));
+    metro.numerator.addEventListener("change", event => setMetroSignature(event.target.value, metroDenominator));
+    metro.denominator.addEventListener("change", event => setMetroSignature(metroNumerator, event.target.value));
+    document.addEventListener("visibilitychange", () => { if (document.hidden && listening) stop(); if (document.hidden && metroRunning) stopMetro(); });
     updateA4(a4); clearReading();
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
