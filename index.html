@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0812" />
+  <meta name="theme-color" content="#06070d" />
   <meta name="description" content="私密、实时的乐器调音器。" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -272,7 +272,7 @@
 
     /* 2026 glass treatment: lavender, orchid and soft pink instead of green. */
     :root {
-      --bg: #0b0812;
+      --bg: #06070d;
       --accent: #f5b4e2;
       --accent-strong: #d79bff;
       --cyan: #c7b8ff;
@@ -284,11 +284,11 @@
     }
     body {
       background:
-        linear-gradient(145deg, rgba(3,5,12,.36), rgba(8,8,18,.08) 42%, rgba(2,3,8,.44)),
-        radial-gradient(ellipse 80% 48% at 50% -8%, rgba(127,168,255,.18), transparent 72%),
-        radial-gradient(ellipse 64% 48% at 5% 70%, rgba(106,71,255,.16), transparent 72%),
-        radial-gradient(ellipse 60% 45% at 96% 75%, rgba(255,116,188,.13), transparent 72%),
-        radial-gradient(ellipse 55% 34% at 52% 103%, rgba(255,163,77,.12), transparent 74%),
+        linear-gradient(145deg, rgba(0,1,5,.62), rgba(7,8,15,.16) 42%, rgba(0,1,4,.68)),
+        radial-gradient(ellipse 80% 48% at 50% -8%, rgba(74,122,208,.13), transparent 72%),
+        radial-gradient(ellipse 64% 48% at 5% 70%, rgba(72,54,178,.12), transparent 72%),
+        radial-gradient(ellipse 60% 45% at 96% 75%, rgba(180,66,128,.10), transparent 72%),
+        radial-gradient(ellipse 55% 34% at 52% 103%, rgba(184,104,52,.09), transparent 74%),
         var(--bg);
     }
     body::before { background: #6541bf; opacity: .26; }
@@ -435,12 +435,136 @@
     @media (prefers-reduced-motion: reduce) {
       .flow-layer, .flow-layer::before, .flow-layer::after, .edge-glow-aura, .edge-glow, .edge-glow::after { animation: none; }
     }
+
+    /* Deep aurora clouds: visible slow motion without brightening the whole canvas. */
+    .flow-layer {
+      inset: 0;
+      opacity: 1;
+      filter: none;
+      background: none;
+      mix-blend-mode: screen;
+      animation: none;
+      overflow: hidden;
+    }
+    .flow-layer::before,
+    .flow-layer::after { display: none; }
+    .flow-cloud {
+      position: absolute;
+      width: min(62vw, 760px);
+      height: min(48vw, 480px);
+      min-width: 320px;
+      min-height: 220px;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(46px) saturate(1.35);
+      opacity: .34;
+      will-change: transform;
+    }
+    .cloud-a {
+      left: -18vw;
+      top: 7%;
+      background: radial-gradient(ellipse at 58% 50%, rgba(49,130,244,.38), rgba(70,77,187,.18) 42%, transparent 74%);
+      animation: cloudDriftA 16s ease-in-out infinite alternate;
+    }
+    .cloud-b {
+      right: -22vw;
+      top: 29%;
+      background: radial-gradient(ellipse at 42% 48%, rgba(237,89,186,.34), rgba(238,140,72,.20) 44%, transparent 74%);
+      animation: cloudDriftB 19s ease-in-out infinite alternate;
+    }
+    .cloud-c {
+      left: 18vw;
+      bottom: -24%;
+      background: radial-gradient(ellipse at 50% 38%, rgba(51,194,198,.27), rgba(196,111,68,.18) 42%, transparent 74%);
+      animation: cloudDriftC 22s ease-in-out infinite alternate;
+    }
+    @keyframes cloudDriftA {
+      0% { transform: translate3d(-3vw, 1vh, 0) rotate(-7deg) scale(.96); }
+      50% { transform: translate3d(10vw, -4vh, 0) rotate(3deg) scale(1.08); }
+      100% { transform: translate3d(17vw, 6vh, 0) rotate(9deg) scale(1.02); }
+    }
+    @keyframes cloudDriftB {
+      0% { transform: translate3d(3vw, -2vh, 0) rotate(7deg) scale(1.02); }
+      50% { transform: translate3d(-9vw, 5vh, 0) rotate(-5deg) scale(.94); }
+      100% { transform: translate3d(-16vw, -4vh, 0) rotate(-11deg) scale(1.08); }
+    }
+    @keyframes cloudDriftC {
+      0% { transform: translate3d(-5vw, 2vh, 0) scale(.98); }
+      50% { transform: translate3d(7vw, -8vh, 0) scale(1.12); }
+      100% { transform: translate3d(15vw, 1vh, 0) scale(1.02); }
+    }
+
+    /* Screen-edge wash: no border or radius, only soft light bleeding inward. */
+    .edge-glow,
+    .edge-glow-aura { display: none; }
+    .edge-wash {
+      position: fixed;
+      z-index: 4;
+      inset: -28px;
+      pointer-events: none;
+      opacity: var(--tune-glow, 0);
+      mix-blend-mode: screen;
+      filter: blur(18px) saturate(1.22);
+      transition: opacity 1.25s cubic-bezier(.22,.75,.25,1);
+      will-change: opacity, transform;
+      background:
+        radial-gradient(ellipse 34% 23% at 50% -4%, rgba(80,215,255,.72), transparent 72%),
+        radial-gradient(ellipse 34% 23% at 103% 50%, rgba(255,104,207,.68), transparent 72%),
+        radial-gradient(ellipse 34% 23% at 50% 104%, rgba(255,168,84,.64), transparent 72%),
+        radial-gradient(ellipse 34% 23% at -3% 50%, rgba(125,117,255,.70), transparent 72%);
+      animation: edgeWashFlow 10s ease-in-out infinite;
+    }
+    .edge-wash::before,
+    .edge-wash::after {
+      position: absolute;
+      content: "";
+      pointer-events: none;
+      inset: -8%;
+      filter: blur(28px);
+      opacity: .82;
+      will-change: transform;
+    }
+    .edge-wash::before {
+      background:
+        radial-gradient(ellipse 27% 18% at 50% -2%, rgba(125,229,255,.52), transparent 76%),
+        radial-gradient(ellipse 28% 18% at 102% 50%, rgba(255,141,225,.48), transparent 76%),
+        radial-gradient(ellipse 28% 18% at 50% 102%, rgba(255,191,113,.44), transparent 76%),
+        radial-gradient(ellipse 27% 18% at -2% 50%, rgba(169,151,255,.52), transparent 76%);
+      animation: edgeWashDrift 8.5s ease-in-out infinite alternate;
+    }
+    .edge-wash::after {
+      inset: -16%;
+      background:
+        radial-gradient(ellipse 31% 20% at 28% -2%, rgba(92,178,255,.30), transparent 78%),
+        radial-gradient(ellipse 30% 20% at 102% 72%, rgba(255,116,187,.30), transparent 78%),
+        radial-gradient(ellipse 30% 20% at 68% 102%, rgba(255,174,92,.26), transparent 78%);
+      animation: edgeWashDriftAlt 12s ease-in-out infinite alternate;
+    }
+    @keyframes edgeWashFlow {
+      0%, 100% { transform: scale(1) translate3d(0, 0, 0); }
+      50% { transform: scale(1.035) translate3d(.4%, -.7%, 0); }
+    }
+    @keyframes edgeWashDrift {
+      0% { transform: translate3d(-1.5%, 0, 0) scale(.98); }
+      50% { transform: translate3d(1.2%, -1%, 0) scale(1.04); }
+      100% { transform: translate3d(2%, 1.2%, 0) scale(1.01); }
+    }
+    @keyframes edgeWashDriftAlt {
+      0% { transform: translate3d(1%, -1%, 0) scale(1.03); }
+      100% { transform: translate3d(-1.5%, 1.5%, 0) scale(.98); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .flow-cloud, .edge-wash, .edge-wash::before, .edge-wash::after { animation: none; }
+    }
   </style>
 </head>
 <body>
-  <div class="flow-layer" aria-hidden="true"></div>
-  <div class="edge-glow-aura" aria-hidden="true"></div>
-  <div class="edge-glow" aria-hidden="true"></div>
+  <div class="flow-layer" aria-hidden="true">
+    <span class="flow-cloud cloud-a"></span>
+    <span class="flow-cloud cloud-b"></span>
+    <span class="flow-cloud cloud-c"></span>
+  </div>
+  <div class="edge-wash" aria-hidden="true"></div>
   <main class="app">
     <div class="top-space" aria-hidden="true"></div>
 
