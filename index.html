@@ -30,6 +30,7 @@
       --warm: #ffb874;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --tune-glow: 0;
     }
 
     * { box-sizing: border-box; }
@@ -73,12 +74,12 @@
       z-index: 0;
       inset: -18%;
       pointer-events: none;
-      opacity: .32;
-      filter: blur(52px) saturate(1.32);
-      background: conic-gradient(from 190deg at 46% 43%, rgba(69,177,255,.18), rgba(145,101,255,.16) 18%, rgba(255,91,205,.21) 38%, rgba(255,170,87,.15) 54%, rgba(72,226,218,.16) 72%, rgba(86,111,255,.17) 88%, rgba(69,177,255,.18));
+      opacity: .42;
+      filter: blur(44px) saturate(1.45);
+      background: conic-gradient(from 190deg at 46% 43%, rgba(69,177,255,.20), rgba(145,101,255,.18) 18%, rgba(255,91,205,.25) 38%, rgba(255,170,87,.18) 54%, rgba(72,226,218,.20) 72%, rgba(86,111,255,.19) 88%, rgba(69,177,255,.20));
       mix-blend-mode: screen;
       transform: translate3d(-2%, 1%, 0) rotate(-4deg) scale(1.06);
-      animation: auroraFlow 24s ease-in-out infinite alternate;
+      animation: auroraFlow 18s ease-in-out infinite alternate;
       will-change: transform;
     }
     .flow-layer::before,
@@ -88,19 +89,19 @@
       border-radius: 50%;
       content: "";
       pointer-events: none;
-      filter: blur(38px);
+      filter: blur(28px);
       will-change: transform;
     }
     .flow-layer::before {
-      background: linear-gradient(112deg, transparent 22%, rgba(68,184,255,.20) 36%, rgba(244,114,220,.24) 49%, rgba(255,178,87,.16) 64%, transparent 80%);
+      background: linear-gradient(112deg, transparent 22%, rgba(68,184,255,.28) 36%, rgba(244,114,220,.32) 49%, rgba(255,178,87,.24) 64%, transparent 80%);
       transform: rotate(-12deg) translate3d(-4%, 2%, 0) scale(1.05);
-      animation: ribbonFlow 18s ease-in-out infinite alternate;
+      animation: ribbonFlow 14s ease-in-out infinite alternate;
     }
     .flow-layer::after {
       inset: 24% -18% 0;
-      background: radial-gradient(ellipse at 50% 80%, rgba(255,146,100,.18), transparent 48%), radial-gradient(ellipse at 28% 35%, rgba(73,225,220,.17), transparent 45%);
+      background: radial-gradient(ellipse at 50% 80%, rgba(255,146,100,.25), transparent 48%), radial-gradient(ellipse at 28% 35%, rgba(73,225,220,.24), transparent 45%);
       transform: translate3d(3%, -2%, 0) scale(1.08);
-      animation: ribbonFlowAlt 22s ease-in-out infinite alternate;
+      animation: ribbonFlowAlt 17s ease-in-out infinite alternate;
     }
     @keyframes auroraFlow {
       0% { transform: translate3d(-3%, 1%, 0) rotate(-5deg) scale(1.06); }
@@ -283,10 +284,11 @@
     }
     body {
       background:
-        radial-gradient(ellipse 80% 48% at 50% -8%, rgba(127,168,255,.20), transparent 72%),
-        radial-gradient(ellipse 64% 48% at 5% 70%, rgba(106,71,255,.19), transparent 72%),
-        radial-gradient(ellipse 60% 45% at 96% 75%, rgba(255,116,188,.16), transparent 72%),
-        radial-gradient(ellipse 55% 34% at 52% 103%, rgba(255,163,77,.14), transparent 74%),
+        linear-gradient(145deg, rgba(3,5,12,.36), rgba(8,8,18,.08) 42%, rgba(2,3,8,.44)),
+        radial-gradient(ellipse 80% 48% at 50% -8%, rgba(127,168,255,.18), transparent 72%),
+        radial-gradient(ellipse 64% 48% at 5% 70%, rgba(106,71,255,.16), transparent 72%),
+        radial-gradient(ellipse 60% 45% at 96% 75%, rgba(255,116,188,.13), transparent 72%),
+        radial-gradient(ellipse 55% 34% at 52% 103%, rgba(255,163,77,.12), transparent 74%),
         var(--bg);
     }
     body::before { background: #6541bf; opacity: .26; }
@@ -384,11 +386,11 @@
       -webkit-mask-composite: xor;
       mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
       mask-composite: exclude;
-      opacity: .48;
+      opacity: var(--tune-glow, 0);
       pointer-events: none;
       mix-blend-mode: screen;
       filter: blur(1px);
-      transition: opacity .55s ease;
+      transition: opacity .9s cubic-bezier(.22,.75,.25,1), box-shadow .9s cubic-bezier(.22,.75,.25,1);
       animation: edgeHue 11s ease-in-out infinite alternate;
       box-shadow: 0 0 25px rgba(143,120,255,.18), inset 0 0 24px rgba(255,137,211,.10);
     }
@@ -402,23 +404,42 @@
       opacity: .72;
       animation: edgeShimmer 5.8s ease-in-out infinite;
     }
-    body.in-tune .edge-glow { opacity: 1; box-shadow: 0 0 55px rgba(143,120,255,.62), inset 0 0 46px rgba(255,144,218,.36); }
+    .edge-glow-aura {
+      position: fixed;
+      z-index: 4;
+      inset: -11px;
+      border: 18px solid transparent;
+      border-radius: 44px;
+      background: conic-gradient(from 214deg at 50% 50%, rgba(80,210,255,.62), rgba(105,121,255,.64) 16%, rgba(196,108,255,.72) 30%, rgba(255,91,207,.66) 46%, rgba(255,173,88,.58) 63%, rgba(80,229,214,.62) 78%, rgba(80,210,255,.62)) border-box;
+      -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+      opacity: var(--tune-glow, 0);
+      pointer-events: none;
+      mix-blend-mode: screen;
+      filter: blur(16px) saturate(1.2);
+      transition: opacity 1s cubic-bezier(.22,.75,.25,1);
+      animation: edgeShimmer 7.5s ease-in-out infinite;
+    }
+    body.in-tune .edge-glow { opacity: var(--tune-glow, 0); box-shadow: 0 0 55px rgba(143,120,255,.62), inset 0 0 46px rgba(255,144,218,.36); }
     body.in-tune .edge-glow::after { opacity: .94; }
     @keyframes edgeHue {
       0% { filter: blur(2px) hue-rotate(-10deg); }
       100% { filter: blur(3px) hue-rotate(18deg); }
     }
     @keyframes edgeShimmer {
-      0%, 100% { transform: translate3d(-1%, 0, 0) scale(.99); opacity: .60; }
-      50% { transform: translate3d(1%, -1%, 0) scale(1.01); opacity: .90; }
+      0%, 100% { transform: translate3d(-1%, 0, 0) scale(.99); }
+      50% { transform: translate3d(1%, -1%, 0) scale(1.01); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .flow-layer, .flow-layer::before, .flow-layer::after, .edge-glow, .edge-glow::after { animation: none; }
+      .flow-layer, .flow-layer::before, .flow-layer::after, .edge-glow-aura, .edge-glow, .edge-glow::after { animation: none; }
     }
   </style>
 </head>
 <body>
   <div class="flow-layer" aria-hidden="true"></div>
+  <div class="edge-glow-aura" aria-hidden="true"></div>
   <div class="edge-glow" aria-hidden="true"></div>
   <main class="app">
     <div class="top-space" aria-hidden="true"></div>
@@ -469,7 +490,9 @@
       listen: document.getElementById("listen"), state: document.getElementById("state"), note: document.getElementById("note"), octave: document.getElementById("octave"), frequency: document.getElementById("frequency"), meter: document.getElementById("meter"), scale: document.getElementById("scale"), needle: document.getElementById("needle"), cents: document.getElementById("cents"), readingStatus: document.getElementById("readingStatus"), privacy: document.getElementById("privacy"), a4Value: document.getElementById("a4Value"), a4Range: document.getElementById("a4Range"), reset: document.getElementById("reset"), notice: document.getElementById("notice")
     };
     let a4 = Number(localStorage.getItem("pitchline-a4")) || 440;
-    let context, analyser, stream, data, raf, listening = false, smoothed, lastPitchAt = 0, lastAnalysisAt = 0;
+    const GLOW_START_CENTS = 34;
+    const GLOW_FULL_CENTS = 5;
+    let context, analyser, stream, data, raf, listening = false, smoothed, glowLevel = 0, lastPitchAt = 0, lastAnalysisAt = 0;
 
     function setNotice(message, error = false) {
       ui.notice.textContent = error ? message : "";
@@ -482,12 +505,22 @@
       ui.a4Range.style.setProperty("--range-progress", `${((a4 - 415) / 51) * 100}%`);
       ui.a4Value.innerHTML = `${a4}<small>Hz</small>`;
     }
+    function setGlowTarget(target) {
+      glowLevel += (target - glowLevel) * .22;
+      if (Math.abs(target - glowLevel) < .004) glowLevel = target;
+      document.body.style.setProperty("--tune-glow", glowLevel.toFixed(3));
+    }
+    function clearGlow() {
+      glowLevel = 0;
+      document.body.style.setProperty("--tune-glow", "0");
+    }
     function clearReading() {
       ui.note.textContent = "·"; ui.note.classList.add("empty"); ui.note.classList.remove("live"); ui.octave.textContent = "";
       ui.frequency.innerHTML = `— <small>Hz</small>`;
       ui.cents.textContent = "—"; ui.readingStatus.textContent = "•"; ui.readingStatus.setAttribute("aria-label", "等待声音");
       ui.meter.classList.remove("in-tune", "sharp", "flat");
       document.body.classList.remove("in-tune");
+      clearGlow();
       ui.needle.style.transform = "translateX(-50%)";
     }
     function noteFor(frequency) {
@@ -497,6 +530,10 @@
     }
     function render(frequency) {
       const pitch = noteFor(frequency), cents = Math.round(pitch.cents), inTune = Math.abs(cents) <= 5, sharp = cents > 5;
+      const distance = Math.abs(pitch.cents);
+      const linearGlow = Math.max(0, Math.min(1, (GLOW_START_CENTS - distance) / (GLOW_START_CENTS - GLOW_FULL_CENTS)));
+      const smoothGlow = linearGlow * linearGlow * (3 - 2 * linearGlow);
+      setGlowTarget(smoothGlow);
       const bounded = Math.max(-50, Math.min(50, pitch.cents));
       const offset = (bounded / 100) * (ui.scale.clientWidth - 4);
       ui.note.textContent = pitch.note; ui.note.classList.remove("empty"); ui.note.classList.add("live"); ui.octave.textContent = pitch.octave;
