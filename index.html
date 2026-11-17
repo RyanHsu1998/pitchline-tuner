@@ -215,19 +215,79 @@
     @media (min-width: 520px) { .app { padding-left: 30px; padding-right: 30px; } .main { padding-top: 74px; } }
     @media (max-height: 700px) { .main { padding-top: 25px; padding-bottom: 20px; } .meter { margin-top: 22px; } .note-wrap { height: 140px; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+    /* 2026 glass treatment: lavender, orchid and soft pink instead of green. */
+    :root {
+      --bg: #0b0812;
+      --accent: #f5b4e2;
+      --accent-strong: #d79bff;
+      --cyan: #c7b8ff;
+      --violet: #dcb7ff;
+      --warm: #ffadc9;
+      --muted: #a9a1b5;
+      --dim: #726981;
+      --line-soft: rgba(255,230,250,.10);
+    }
+    body {
+      background:
+        radial-gradient(ellipse 80% 48% at 50% -8%, rgba(210,170,255,.18), transparent 72%),
+        radial-gradient(ellipse 64% 48% at 5% 70%, rgba(128,75,210,.18), transparent 72%),
+        radial-gradient(ellipse 60% 45% at 96% 75%, rgba(255,116,188,.13), transparent 72%),
+        var(--bg);
+    }
+    body::before { background: #6541bf; opacity: .26; }
+    body::after { background: #d45d9a; opacity: .22; }
+    .top-space { height: 20px; }
+    .app { width: min(100%, 520px); padding-top: calc(13px + var(--safe-top)); padding-bottom: calc(18px + var(--safe-bottom)); }
+    .main { padding: clamp(24px, 5.4vh, 58px) 0 26px; }
+    .halo { top: -50px; width: min(72vw, 310px); height: min(72vw, 310px); background: radial-gradient(circle, rgba(245,180,226,.16), rgba(197,174,255,.10) 38%, transparent 70%); }
+    .note-wrap { height: 148px; }
+    .note { font-size: clamp(124px, 34vw, 184px); text-shadow: 0 8px 52px rgba(240,204,255,.14); }
+    .note.empty { color: rgba(255,235,250,.20); }
+    .octave { margin-top: 14px; color: #aaa0b9; }
+    .frequency strong { color: #f2eafa; }
+    .meter { margin-top: 25px; padding: 22px 17px 15px; border-radius: 30px; background: linear-gradient(145deg, rgba(255,230,249,.11), rgba(183,139,255,.045)); box-shadow: 0 24px 55px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,235,250,.12); }
+    .meter::before { background: rgba(228,163,230,.12); }
+    .scale::before { background: linear-gradient(90deg, rgba(194,177,255,.58), rgba(255,255,255,.15) 40%, rgba(245,180,226,.85) 50%, rgba(255,255,255,.15) 60%, rgba(255,170,202,.62)); }
+    .tick.center { background: var(--accent); box-shadow: 0 0 13px rgba(245,180,226,.72); }
+    .meter.in-tune::before { background: rgba(245,180,226,.18); }
+    .meter.in-tune .needle { background: var(--accent); box-shadow: 0 0 0 5px rgba(245,180,226,.13), 0 0 21px rgba(245,180,226,.52); }
+    .meter.sharp .needle { background: var(--warm); }
+    .meter.flat .needle { background: var(--cyan); }
+    .meter.in-tune .cents, .meter.in-tune .reading-status { color: var(--accent); border-color: rgba(245,180,226,.36); }
+    .meter.sharp .cents, .meter.sharp .reading-status { color: var(--warm); border-color: rgba(255,173,201,.32); }
+    .meter.flat .cents, .meter.flat .reading-status { color: var(--cyan); border-color: rgba(199,184,255,.32); }
+    .controls { gap: 12px; }
+    .listen-dock { position: relative; display: flex; align-items: center; justify-content: center; gap: 22px; min-height: 92px; padding: 10px 20px; border-radius: 30px; background: linear-gradient(145deg, rgba(255,226,248,.12), rgba(197,161,255,.055)); box-shadow: 0 20px 40px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,238,252,.13); }
+    .listen-dock .ambient-dot { position: absolute; top: 14px; right: 17px; width: 6px; height: 6px; background: rgba(255,255,255,.25); box-shadow: 0 0 0 5px rgba(255,255,255,.03); }
+    .listen-dock .ambient-dot.active { background: var(--accent); box-shadow: 0 0 0 5px rgba(245,180,226,.10), 0 0 18px rgba(245,180,226,.52); }
+    .listen { width: 66px; height: 66px; margin: 0; color: #311d3d; background: linear-gradient(140deg, #ffd7ed, #d9bbff); box-shadow: 0 14px 34px rgba(236,141,207,.28), inset 0 1px 0 rgba(255,255,255,.72), 0 0 0 8px rgba(245,180,226,.08); }
+    .listen.listening { color: #fff8ff; background: linear-gradient(140deg, #8f6ad0, #da72b4); box-shadow: 0 14px 34px rgba(195,104,184,.34), inset 0 1px 0 rgba(255,255,255,.28), 0 0 0 8px rgba(245,180,226,.08); }
+    .signal { display: flex; align-items: center; justify-content: center; gap: 4px; width: 43px; height: 34px; opacity: .42; }
+    .signal i { display: block; width: 3px; height: 10px; border-radius: 99px; background: linear-gradient(180deg, var(--violet), var(--accent)); transform-origin: center; }
+    .signal i:nth-child(1) { height: 8px; }.signal i:nth-child(2) { height: 15px; }.signal i:nth-child(3) { height: 25px; }.signal i:nth-child(4) { height: 15px; }.signal i:nth-child(5) { height: 8px; }
+    .listen-dock:has(.listen.listening) .signal { opacity: .95; }
+    .listen-dock:has(.listen.listening) .signal i { animation: voicePulse 1.1s ease-in-out infinite; }
+    .listen-dock:has(.listen.listening) .signal i:nth-child(2) { animation-delay: -.22s; }.listen-dock:has(.listen.listening) .signal i:nth-child(3) { animation-delay: -.45s; }.listen-dock:has(.listen.listening) .signal i:nth-child(4) { animation-delay: -.68s; }
+    @keyframes voicePulse { 0%,100% { transform: scaleY(.58); } 50% { transform: scaleY(1.14); } }
+    .reference { padding: 12px 14px 11px; border-radius: 24px; background: linear-gradient(145deg, rgba(255,230,249,.10), rgba(194,153,255,.045)); }
+    .a4-tag { color: #bdb2c8; }.value { color: #f8effa; }
+    .adjust { color: #f4e8f8; background: linear-gradient(145deg, rgba(255,210,241,.16), rgba(195,164,255,.10)); border-color: rgba(255,220,245,.18); }
+    .adjust:hover, .reset:hover { border-color: rgba(255,213,241,.40); background: rgba(255,214,242,.15); }
+    input[type=range] { background: linear-gradient(90deg, var(--accent) var(--range-progress,50%), rgba(255,225,246,.13) var(--range-progress,50%)); }
+    input[type=range]::-webkit-slider-thumb { background: var(--accent); box-shadow: 0 0 0 1px rgba(245,180,226,.42), 0 2px 9px rgba(0,0,0,.35); }
+    input[type=range]::-moz-range-thumb { background: var(--accent); }
+    .reset { background: rgba(255,214,242,.08); color: #c2b6ca; }
   </style>
 </head>
 <body>
   <main class="app">
-    <header class="topbar">
-      <span id="privacy" class="ambient-dot" role="status" aria-label="未开始聆听"></span>
-      <svg class="topbar-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h3l1.5-4.5 3 9 2.2-6 1.4 3.5H20" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </header>
+    <div class="top-space" aria-hidden="true"></div>
 
     <section class="main" aria-label="实时调音器">
       <div class="hero">
         <div class="halo" aria-hidden="true"></div>
-        <div class="note-wrap" aria-live="polite"><div id="note" class="note empty">—</div><span id="octave" class="octave"></span></div>
+        <div class="note-wrap" aria-live="polite"><div id="note" class="note empty">·</div><span id="octave" class="octave"></span></div>
         <div id="frequency" class="frequency">— <small>Hz</small></div>
       </div>
       <div id="meter" class="meter" aria-label="音高偏差">
@@ -238,10 +298,15 @@
     </section>
 
     <section class="controls" aria-label="调音器设置">
-      <button id="listen" class="listen" type="button" aria-label="开始调音" aria-pressed="false">
-        <svg class="icon mic-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.8a3.6 3.6 0 0 0 3.6-3.6V7.6a3.6 3.6 0 1 0-7.2 0v4.6a3.6 3.6 0 0 0 3.6 3.6Zm5.3-3.6a5.3 5.3 0 0 1-10.6 0H5a7 7 0 0 0 6.1 6.9V22h1.8v-2.9A7 7 0 0 0 19 12.2h-1.7Z"/></svg>
-        <svg class="icon stop-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
-      </button>
+      <div class="listen-dock glass">
+        <div class="signal signal-left" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <button id="listen" class="listen" type="button" aria-label="开始调音" aria-pressed="false">
+          <svg class="icon mic-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.8a3.6 3.6 0 0 0 3.6-3.6V7.6a3.6 3.6 0 1 0-7.2 0v4.6a3.6 3.6 0 0 0 3.6 3.6Zm5.3-3.6a5.3 5.3 0 0 1-10.6 0H5a7 7 0 0 0 6.1 6.9V22h1.8v-2.9A7 7 0 0 0 19 12.2h-1.7Z"/></svg>
+          <svg class="icon stop-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+        </button>
+        <div class="signal signal-right" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <span id="privacy" class="ambient-dot" role="status" aria-label="未开始聆听"></span>
+      </div>
 
       <div>
         <div class="reference glass">
@@ -279,7 +344,7 @@
       ui.a4Value.innerHTML = `${a4}<small>Hz</small>`;
     }
     function clearReading() {
-      ui.note.textContent = "—"; ui.note.classList.add("empty"); ui.note.classList.remove("live"); ui.octave.textContent = "";
+      ui.note.textContent = "·"; ui.note.classList.add("empty"); ui.note.classList.remove("live"); ui.octave.textContent = "";
       ui.frequency.innerHTML = `— <small>Hz</small>`;
       ui.cents.textContent = "—"; ui.readingStatus.textContent = "•"; ui.readingStatus.setAttribute("aria-label", "等待声音");
       ui.meter.classList.remove("in-tune", "sharp", "flat");
