@@ -556,6 +556,80 @@
     @media (prefers-reduced-motion: reduce) {
       .flow-cloud, .edge-wash, .edge-wash::before, .edge-wash::after { animation: none; }
     }
+
+    /* Liquid-glass listening control: a softer iOS-style squircle instead of a flat icon disc. */
+    .listen {
+      width: 78px;
+      height: 68px;
+      overflow: hidden;
+      border: 1px solid rgba(255,242,255,.38);
+      border-radius: 26px;
+      color: #fff7ff;
+      background:
+        radial-gradient(ellipse 85% 65% at 25% 10%, rgba(255,255,255,.42), transparent 62%),
+        linear-gradient(145deg, rgba(255,222,246,.28), rgba(185,146,255,.16) 52%, rgba(103,121,255,.12));
+      box-shadow:
+        0 18px 36px rgba(12,7,28,.30),
+        inset 0 1px 0 rgba(255,255,255,.56),
+        inset 0 -10px 22px rgba(107,70,160,.12),
+        0 0 0 7px rgba(245,180,226,.055);
+      -webkit-backdrop-filter: blur(24px) saturate(1.65);
+      backdrop-filter: blur(24px) saturate(1.65);
+    }
+    .listen::before {
+      position: absolute;
+      z-index: -1;
+      inset: 1px;
+      border-radius: 24px;
+      background: linear-gradient(115deg, rgba(255,255,255,.25), transparent 34%, rgba(255,255,255,.05) 68%, rgba(255,255,255,.18));
+      content: "";
+      opacity: .78;
+      pointer-events: none;
+    }
+    .listen::after {
+      position: absolute;
+      z-index: -1;
+      width: 76px;
+      height: 28px;
+      left: 50%;
+      top: -20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.42);
+      filter: blur(15px);
+      content: "";
+      opacity: .34;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .listen.listening {
+      border-color: rgba(255,224,248,.50);
+      color: #fff9ff;
+      background:
+        radial-gradient(ellipse 90% 70% at 20% 6%, rgba(255,255,255,.34), transparent 60%),
+        linear-gradient(145deg, rgba(139,112,224,.58), rgba(224,103,179,.44) 58%, rgba(89,106,218,.38));
+      box-shadow:
+        0 18px 38px rgba(68,28,102,.38),
+        inset 0 1px 0 rgba(255,255,255,.50),
+        inset 0 -12px 26px rgba(57,34,108,.18),
+        0 0 0 7px rgba(245,180,226,.10),
+        0 0 30px rgba(233,119,208,.24);
+    }
+    .listen.listening::after { opacity: .52; animation: buttonSheen 3.2s ease-in-out infinite; }
+    .listen .icon {
+      width: 27px;
+      height: 27px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 2px 5px rgba(27,12,42,.24));
+    }
+    @keyframes buttonSheen {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(.92); }
+      50% { transform: translateX(-50%) translateY(7px) scale(1.12); }
+    }
+    @media (prefers-reduced-motion: reduce) { .listen.listening::after { animation: none; } }
   </style>
 </head>
 <body>
@@ -585,8 +659,8 @@
       <div class="listen-dock glass">
         <div class="signal signal-left" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <button id="listen" class="listen" type="button" aria-label="开始调音" aria-pressed="false">
-          <svg class="icon mic-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.8a3.6 3.6 0 0 0 3.6-3.6V7.6a3.6 3.6 0 1 0-7.2 0v4.6a3.6 3.6 0 0 0 3.6 3.6Zm5.3-3.6a5.3 5.3 0 0 1-10.6 0H5a7 7 0 0 0 6.1 6.9V22h1.8v-2.9A7 7 0 0 0 19 12.2h-1.7Z"/></svg>
-          <svg class="icon stop-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+          <svg class="icon mic-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"></rect><path d="M6.5 11.6a5.5 5.5 0 0 0 11 0M12 17.2v3M9.2 20.2h5.6"></path></svg>
+          <svg class="icon stop-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2 7.8v8.4M15.8 7.8v8.4"></path></svg>
         </button>
         <div class="signal signal-right" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <span id="privacy" class="ambient-dot" role="status" aria-label="未开始聆听"></span>
